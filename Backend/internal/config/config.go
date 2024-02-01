@@ -8,8 +8,9 @@ import (
 var cfg Config
 
 type Config struct {
-	DB      DB     `mapstructure:"db"`
-	AppPort string `mapstructure:"app_port"`
+	DB        DB     `mapstructure:"db"`
+	AppPort   string `mapstructure:"app_port"`
+	JWTSecret string `mapstructure:"jwt_secret"`
 }
 
 func GetConfig() Config {
