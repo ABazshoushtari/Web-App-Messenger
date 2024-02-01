@@ -9,11 +9,11 @@ import (
 
 type UserClaim struct {
 	jwt.RegisteredClaims
-	ID     uint
+	ID     uint64
 	Expiry time.Time
 }
 
-func GenerateJWT(userID uint) (string, error) {
+func GenerateJWT(userID uint64) (string, error) {
 	key := config.GetConfig().JWTSecret
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, UserClaim{
 		RegisteredClaims: jwt.RegisteredClaims{},

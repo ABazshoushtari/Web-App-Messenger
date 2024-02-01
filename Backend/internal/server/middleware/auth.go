@@ -26,10 +26,12 @@ func (m *Middlewares) Auth() echo.MiddlewareFunc {
 			}
 
 			user := domain.User{}
-			if err := m.repos.User.GetByID(uint64(claims.ID), &user); err != nil {
+			if err := m.repos.User.GetByID(claims.ID, &user); err != nil {
 				return echo.NewHTTPError(401, "Unauthorized, failed to get user")
 			}
-			c.Set("user", &user)
+			user.Password = "********"
+			ctx := c.Request().Context().(*CustomContext)
+			ctx.user = user.ToDTO()
 			return next(c)
 		}
 	}
