@@ -10,7 +10,7 @@ type User struct {
 	BaseModel
 	FirstName   string `json:"first_name" validate:"required,min=1"`
 	LastName    string `json:"last_name"`
-	PhoneNumber string `json:"phone_number" validate:"required,"`
+	PhoneNumber string `json:"phone_number" validate:"required,number"`
 	Username    string `json:"username" validate:"required,min=5,alphanum"`
 	Password    string `json:"password"`
 	Image       string `json:"image"`
