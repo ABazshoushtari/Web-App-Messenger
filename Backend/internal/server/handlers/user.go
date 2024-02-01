@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/ABazshoushtari/Web-App-Messenger/domain/payloads"
 	"github.com/labstack/echo/v4"
+	"regexp"
 	"strconv"
 )
 
@@ -32,6 +33,9 @@ func (h *Handlers) IndexUser() echo.HandlerFunc {
 	}
 	return func(c echo.Context) error {
 		key := c.QueryParam("keyword")
+		if isMatch, _ := regexp.MatchString("^[a-zA-Z0-9]*$", key); !isMatch {
+			return errors.New("invalid keyword. only numbers and letters are allowed")
+		}
 		res, err := h.svcs.User.IndexUser(c.Request().Context(), key)
 		if res.UserDTO == nil {
 			return errors.New("not Found")
