@@ -1,8 +1,10 @@
 package handlers
 
 import (
+	"errors"
 	"github.com/ABazshoushtari/Web-App-Messenger/domain/payloads"
 	"github.com/labstack/echo/v4"
+	"strconv"
 )
 
 func (h *Handlers) AddChat() echo.HandlerFunc {
@@ -47,7 +49,10 @@ func (h *Handlers) ShowChat() echo.HandlerFunc {
 		payloads.ShowChatResponse
 	}
 	return func(c echo.Context) error {
-		chatID := c.Param("id")
+		chatID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+		if err != nil {
+			return errors.New("invalid chat id")
+		}
 		res, err := h.svcs.Chat.ShowChat(c.Request().Context(), chatID)
 		if err != nil {
 			return err
@@ -64,7 +69,10 @@ func (h *Handlers) DeleteChat() echo.HandlerFunc {
 		payloads.GenericsSuccessFlagResponse
 	}
 	return func(c echo.Context) error {
-		chatID := c.Param("id")
+		chatID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+		if err != nil {
+			return errors.New("invalid chat id")
+		}
 		res, err := h.svcs.Chat.DeleteChat(c.Request().Context(), chatID)
 		if err != nil {
 			return err
@@ -79,8 +87,14 @@ func (h *Handlers) DeleteMessage() echo.HandlerFunc {
 		payloads.GenericsSuccessFlagResponse
 	}
 	return func(c echo.Context) error {
-		chatID := c.Param("chat_id")
-		messageID := c.Param("message_id")
+		chatID, err := strconv.ParseUint(c.Param("chat_id"), 10, 64)
+		if err != nil {
+			return errors.New("invalid chat id")
+		}
+		messageID, err := strconv.ParseUint(c.Param("message_id"), 10, 64)
+		if err != nil {
+			return errors.New("invalid chat id")
+		}
 		res, err := h.svcs.Chat.DeleteMessage(c.Request().Context(), chatID, messageID)
 		if err != nil {
 			return err
