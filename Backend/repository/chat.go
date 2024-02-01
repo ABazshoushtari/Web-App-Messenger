@@ -58,3 +58,7 @@ func (c *chatRepository) getMessages(chatID uint64) ([]domain.Message, error) {
 func (c *chatRepository) GetByParticipants(firstUser uint64, secondUser uint64) error {
 	return c.db.Where("ARRAY[?,?] <@ people", firstUser, secondUser).Find(&domain.Chat{}).Error
 }
+
+func (c *chatRepository) DeleteUserFromChats(userID uint64) error {
+	return c.db.Exec("SELECT ARRAY_REMOVE(people, ?) FROM chats", userID).Error
+}
