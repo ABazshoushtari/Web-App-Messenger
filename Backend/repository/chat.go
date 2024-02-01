@@ -46,9 +46,15 @@ func (c *chatRepository) Delete(chatID uint64) error {
 func (c *chatRepository) DeleteMessage(chatID uint64, messageID uint64) error {
 	return c.db.Where("chat_id = ? AND id = ?", chatID, messageID).Delete(&domain.Message{}).Error
 }
-
+func (c *chatRepository) DeleteAllMessages(chatID uint64) error {
+	return c.db.Where("chat_id = ?", chatID).Delete(&domain.Message{}).Error
+}
 func (c *chatRepository) getMessages(chatID uint64) ([]domain.Message, error) {
 	messages := []domain.Message{}
 	err := c.db.Where("chat_id = ?", chatID).Find(&messages).Error
 	return messages, err
+}
+
+func (c *chatRepository) GetByParticipants(firstUser uint64, secondUser uint64) error {
+	return c.db.Where("ARRAY[?,?] <@ people", firstUser, secondUser).Find(&domain.Chat{}).Error
 }
