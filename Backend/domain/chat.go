@@ -11,5 +11,5 @@ type Message struct {
 	ChatID   uint64 `json:"chat_id"`
 	Sender   uint64 `json:"sender"`
 	Receiver uint64 `json:"receiver"`
-	Content  string `json:"content"`
+	Content  string `json:"content" validate:"required,max=300"`
 }
