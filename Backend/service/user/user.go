@@ -174,6 +174,9 @@ func (u *User) DeleteUser(ctx context.Context, userID uint64) (*payloads.Generic
 	if err := u.repos.User.Delete(&user.User); err != nil {
 		return nil, errors.New("error while deleting user")
 	}
+	if err := u.repos.Chat.DeleteUserFromChats(userID); err != nil {
+		return nil, errors.New("error while deleting user from chats")
+	}
 	return &payloads.GenericsSuccessFlagResponse{
 		Successful: true,
 		Message:    "user deleted successfully",
