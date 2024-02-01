@@ -20,7 +20,7 @@ type UserRegisterRequest struct {
 }
 
 type UserRegisterResponse struct {
-	UserDTO `json:"user"`
+	User UserDTO `json:"user"`
 }
 
 type UserLoginRequest struct {
@@ -43,7 +43,7 @@ type UserUpdateRequest struct {
 }
 
 type UserShowResponse struct {
-	UserDTO `json:"user"`
+	*UserDTO `json:"user"`
 }
 type UserIndexResponse struct {
 	Users []UserDTO `json:"users"`
