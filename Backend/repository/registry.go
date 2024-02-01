@@ -40,6 +40,7 @@ type Chat interface {
 	Delete(chatID uint64) error
 	DeleteAllMessages(chatID uint64) error
 	DeleteMessage(chatID uint64, messageID uint64) error
+	DeleteUserFromChats(userID uint64) error
 }
 
 type Contact interface {
