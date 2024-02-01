@@ -18,26 +18,27 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(credentials),
-      });
+        const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(credentials),
+        });
 
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.message || `HTTP error! status: ${response.status}`);
-      }
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.message || `HTTP error! status: ${response.status}`);
+        }
 
-      localStorage.setItem('jwtToken', data.token);
-      setIsLoading(false);
-      navigate('/app'); // Use React Router for navigation
+        localStorage.setItem('jwtToken', data.token);
+        setIsLoading(false);
+        navigate('/main'); // Assuming '/main' is the route for MainPage
     } catch (error) {
-      console.error('Login failed:', error);
-      setError(error.message || 'Login failed. Please try again.');
-      setIsLoading(false);
+        console.error('Login failed:', error);
+        setError(error.message || 'Login failed. Please try again.');
+        setIsLoading(false);
     }
-  };
+};
+
 
   return (
     <div className="login-container">
