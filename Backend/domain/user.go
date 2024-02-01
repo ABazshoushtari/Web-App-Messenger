@@ -2,7 +2,6 @@ package domain
 
 import (
 	"errors"
-	"github.com/ABazshoushtari/Web-App-Messenger/domain/payloads"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -15,6 +14,10 @@ type User struct {
 	Password    string `json:"password"`
 	Image       string `json:"image"`
 	Bio         string `json:"bio" validate:"required,max=100"`
+}
+type UserDTO struct {
+	User
+	Password string `default:"" json:"password"`
 }
 
 var userValidator *validator.Validate
@@ -33,8 +36,8 @@ func (u User) Validate() error {
 	return nil
 }
 
-func (u User) ToDTO() *payloads.UserDTO {
-	return &payloads.UserDTO{
+func (u User) ToDTO() *UserDTO {
+	return &UserDTO{
 		User:     u,
 		Password: "********",
 	}

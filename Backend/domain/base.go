@@ -2,8 +2,7 @@ package domain
 
 import (
 	"context"
-	"github.com/ABazshoushtari/Web-App-Messenger/domain/payloads"
-	"github.com/ABazshoushtari/Web-App-Messenger/internal/server/middleware"
+	"net/http"
 	"time"
 )
 
@@ -13,11 +12,20 @@ type BaseModel struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 }
 
-func GetUserDTO(ctx context.Context) *payloads.UserDTO {
+type CustomContext struct {
+	context.Context
+	Request func() *http.Request
+	User    *UserDTO
+}
+
+func (c *CustomContext) GetUser() *UserDTO {
+	return c.User
+}
+func GetUserDTO(ctx context.Context) *UserDTO {
 	if ctx == nil {
 		return nil
 	}
-	if c, ok := ctx.(middleware.CustomContext); ok {
+	if c, ok := ctx.(CustomContext); ok {
 		return c.GetUser()
 	}
 	return nil

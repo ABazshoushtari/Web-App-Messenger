@@ -5,10 +5,6 @@ import (
 	"mime/multipart"
 )
 
-type UserDTO struct {
-	domain.User
-	Password string `default:"" json:"password"`
-}
 type UserRegisterRequest struct {
 	Username  string                `form:"username"`
 	Password  string                `form:"password"`
@@ -20,7 +16,7 @@ type UserRegisterRequest struct {
 }
 
 type UserRegisterResponse struct {
-	User UserDTO `json:"user"`
+	User domain.UserDTO `json:"user"`
 }
 
 type UserLoginRequest struct {
@@ -43,8 +39,8 @@ type UserUpdateRequest struct {
 }
 
 type UserShowResponse struct {
-	*UserDTO `json:"user"`
+	*domain.UserDTO `json:"user"`
 }
 type UserIndexResponse struct {
-	Users []UserDTO `json:"users"`
+	Users []domain.UserDTO `json:"users"`
 }

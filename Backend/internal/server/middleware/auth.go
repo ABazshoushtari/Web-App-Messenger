@@ -30,8 +30,8 @@ func (m *Middlewares) Auth() echo.MiddlewareFunc {
 				return echo.NewHTTPError(401, "Unauthorized, failed to get user")
 			}
 			user.Password = "********"
-			ctx := c.Request().Context().(*CustomContext)
-			ctx.user = user.ToDTO()
+			ctx := c.Request().Context().(*domain.CustomContext)
+			ctx.User = user.ToDTO()
 			return next(c)
 		}
 	}
