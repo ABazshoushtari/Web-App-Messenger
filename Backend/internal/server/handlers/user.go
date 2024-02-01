@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/ABazshoushtari/Web-App-Messenger/domain/payloads"
 	"github.com/labstack/echo/v4"
+	"strconv"
 )
 
 func (h *Handlers) ShowUser() echo.HandlerFunc {
@@ -11,7 +12,10 @@ func (h *Handlers) ShowUser() echo.HandlerFunc {
 		payloads.UserShowResponse
 	}
 	return func(c echo.Context) error {
-		userID := c.Param("id")
+		userID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+		if err != nil {
+			return errors.New("invalid user id")
+		}
 		res, err := h.svcs.User.ShowUser(c.Request().Context(), userID)
 		if err != nil {
 			return err
@@ -24,19 +28,19 @@ func (h *Handlers) ShowUser() echo.HandlerFunc {
 
 func (h *Handlers) IndexUser() echo.HandlerFunc {
 	type response struct {
-		payloads.UserIndexResponse
+		payloads.UserShowResponse
 	}
 	return func(c echo.Context) error {
 		key := c.QueryParam("keyword")
 		res, err := h.svcs.User.IndexUser(c.Request().Context(), key)
-		if len(res.Users) == 0 {
+		if res.UserDTO == nil {
 			return errors.New("not Found")
 		}
 		if err != nil {
 			return err
 		}
 		return c.JSON(200, response{
-			UserIndexResponse: *res,
+			UserShowResponse: *res,
 		})
 	}
 }
@@ -72,7 +76,10 @@ func (h *Handlers) UpdateUser() echo.HandlerFunc {
 		//req.Image = img
 		//req.Bio = bio
 
-		userID := c.Param("id")
+		userID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+		if err != nil {
+			return errors.New("invalid user id")
+		}
 		res, err := h.svcs.User.UpdateUser(c.Request().Context(), userID, req.UserUpdateRequest)
 		if err != nil {
 			return err
@@ -88,7 +95,10 @@ func (h *Handlers) DeleteUser() echo.HandlerFunc {
 		payloads.GenericsSuccessFlagResponse
 	}
 	return func(c echo.Context) error {
-		userID := c.Param("id")
+		userID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+		if err != nil {
+			return errors.New("invalid user id")
+		}
 		res, err := h.svcs.User.DeleteUser(c.Request().Context(), userID)
 		if err != nil {
 			return err
@@ -104,8 +114,11 @@ func (h *Handlers) ShowContacts() echo.HandlerFunc {
 		payloads.ShowContactsResponse
 	}
 	return func(c echo.Context) error {
-		userID := c.Param("id")
-		res, err := h.svcs.User.ShowContacts(c.Request().Context(), userID)
+		userID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+		if err != nil {
+			return errors.New("invalid user id")
+		}
+		res, err := h.svcs.Contact.ShowContacts(c.Request().Context(), userID)
 		if err != nil {
 			return err
 		}
@@ -127,8 +140,11 @@ func (h *Handlers) AddContact() echo.HandlerFunc {
 		if err := c.Bind(&req); err != nil {
 			return errors.New("invalid request")
 		}
-		userID := c.Param("id")
-		res, err := h.svcs.User.AddContact(c.Request().Context(), userID, req.AddContactRequest)
+		userID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+		if err != nil {
+			return errors.New("invalid user id")
+		}
+		res, err := h.svcs.Contact.AddContact(c.Request().Context(), userID, req.AddContactRequest)
 		if err != nil {
 			return err
 		}
@@ -143,9 +159,15 @@ func (h *Handlers) DeleteContact() echo.HandlerFunc {
 		payloads.GenericsSuccessFlagResponse
 	}
 	return func(c echo.Context) error {
-		userID := c.Param("id")
-		contactID := c.Param("contact_id")
-		res, err := h.svcs.User.DeleteContact(c.Request().Context(), userID, contactID)
+		userID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+		if err != nil {
+			return errors.New("invalid user id")
+		}
+		contactID, err := strconv.ParseUint(c.Param("contact_id"), 10, 64)
+		if err != nil {
+			return errors.New("invalid contact id")
+		}
+		res, err := h.svcs.Contact.DeleteContact(c.Request().Context(), userID, contactID)
 		if err != nil {
 			return err
 		}
