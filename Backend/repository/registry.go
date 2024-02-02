@@ -36,7 +36,6 @@ type Chat interface {
 	Create(chat *domain.Chat) error
 	GetByID(chatID uint64, chat *domain.Chat) error
 	GetByUserID(userID uint64) ([]domain.Chat, error)
-	GetByParticipants(firstUser uint64, secondUser uint64) error
 	Delete(chatID uint64) error
 	DeleteAllMessages(chatID uint64) error
 	DeleteMessage(chatID uint64, messageID uint64) error

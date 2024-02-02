@@ -51,7 +51,7 @@ func (c *Contact) AddContact(ctx context.Context, userID uint64, payload payload
 		ContactName: payload.ContactName,
 	}
 	if err := c.repos.Contact.Upsert(&contact); err != nil {
-		return nil, errors.New("error while")
+		return nil, errors.New("error while saving contact")
 	}
 	return &payloads.AddContactResponse{
 		Contact: contact,

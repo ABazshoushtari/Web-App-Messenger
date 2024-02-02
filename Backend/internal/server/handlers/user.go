@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/ABazshoushtari/Web-App-Messenger/domain/payloads"
 	"github.com/labstack/echo/v4"
+	"net/http"
 	"regexp"
 	"strconv"
 )
@@ -37,7 +38,7 @@ func (h *Handlers) IndexUser() echo.HandlerFunc {
 			return errors.New("invalid keyword. only numbers and letters are allowed")
 		}
 		res, err := h.svcs.User.IndexUser(c.Request().Context(), key)
-		if res.UserDTO == nil {
+		if res == nil {
 			return errors.New("not Found")
 		}
 		if err != nil {
@@ -58,27 +59,33 @@ func (h *Handlers) UpdateUser() echo.HandlerFunc {
 	}
 	return func(c echo.Context) error {
 		var req request
-		if err := c.Bind(&req); err != nil {
-			return errors.New("invalid form request")
+
+		img, err := c.FormFile("image")
+		if errors.Is(err, http.ErrMissingFile) || err == nil {
+			req.Image = img
+			if req.Image != nil {
+				if req.Image.Size > 1000000 {
+					return errors.New("image size too large")
+				}
+			}
+		} else {
+			return errors.New("invalid image")
 		}
-		//img, err := c.FormFile("image")
-		//if err != nil {
-		//	return errors.New("invalid user image")
-		//}
-		//username := c.FormValue("username")
-		//password := c.FormValue("password")
-		//firstName := c.FormValue("first_name")
-		//lastName := c.FormValue("last_name")
-		//phone := c.FormValue("phone")
-		//bio := c.FormValue("bio")
-		//
-		//req.Username = username
-		//req.Password = password
-		//req.FirstName = firstName
-		//req.LastName = lastName
-		//req.Phone = phone
-		//req.Image = img
-		//req.Bio = bio
+
+		username := c.FormValue("username")
+		password := c.FormValue("password")
+		firstName := c.FormValue("first_name")
+		lastName := c.FormValue("last_name")
+		phone := c.FormValue("phone")
+		bio := c.FormValue("bio")
+
+		req.Username = username
+		req.Password = password
+		req.FirstName = firstName
+		req.LastName = lastName
+		req.Phone = phone
+		req.Image = img
+		req.Bio = bio
 
 		userID, err := strconv.ParseUint(c.Param("id"), 10, 64)
 		if err != nil {

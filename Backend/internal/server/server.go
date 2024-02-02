@@ -9,7 +9,6 @@ import (
 	"github.com/ABazshoushtari/Web-App-Messenger/service"
 	"github.com/labstack/echo/v4"
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
-	"os"
 )
 
 func Start() error {
@@ -28,5 +27,5 @@ func Start() error {
 	e.HTTPErrorHandler = ErrorHandler()
 
 	routes(e, handler, middlewares)
-	return e.Start(":" + os.Getenv("APP_PORT"))
+	return e.Start(":" + config.GetConfig().AppPort)
 }

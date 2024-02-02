@@ -1,9 +1,17 @@
 package domain
 
+import (
+	"github.com/lib/pq"
+)
+
 type Chat struct {
 	BaseModel
-	People   []uint64  `json:"people"`
-	Messages []Message `gorm:"-" json:"messages,omitempty"`
+	People   pq.Int64Array `json:"people" gorm:"type:int[]"`
+	Messages []Message     `gorm:"-" json:"messages,omitempty"`
+}
+
+func (c Chat) TableName() string {
+	return "chats"
 }
 
 type Message struct {
@@ -16,7 +24,7 @@ type Message struct {
 
 func (c *Chat) IsParticipant(userID uint64) bool {
 	for _, id := range c.People {
-		if id == userID {
+		if id == int64(userID) {
 			return true
 		}
 	}

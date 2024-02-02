@@ -27,11 +27,11 @@ func (m *Middlewares) CustomContext() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			ctx := c.Request().Context()
-			ctx = &domain.CustomContext{
+			newCtx := domain.CustomContext{
 				Context: ctx,
 				Request: c.Request,
 			}
-			c.SetRequest(c.Request().WithContext(ctx))
+			c.SetRequest(c.Request().WithContext(&newCtx))
 			return next(c)
 		}
 	}

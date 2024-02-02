@@ -4,11 +4,11 @@ CREATE DATABASE main;
 \c main
 
 CREATE TABLE IF NOT EXISTS users (
-    id serial PRIMARY KEY, firstname text not null, lastname text, phone text UNIQUE not NULL, username text UNIQUE not null, password text not null, image text UNIQUE, bio VARCHAR(100), created_at timestamp not null default now(), updated_at timestamp not null default now()
+    id serial PRIMARY KEY, first_name text not null, last_name text, phone_number text UNIQUE not NULL, username text UNIQUE not null, password text not null, image text UNIQUE, bio VARCHAR(100), created_at timestamp not null default now(), updated_at timestamp not null default now()
 );
 
 CREATE TABLE IF NOT EXISTS chats (
-    id serial PRIMARY KEY, people int[] NOT NULL, created_at timestamp not null default now(), updated_at timestamp not null default now()
+    id serial primary key , people int[] unique , created_at timestamp not null default now(), updated_at timestamp not null default now()
 );
 
 CREATE TABLE IF NOT EXISTS messages (

@@ -7,7 +7,9 @@ import (
 	"github.com/ABazshoushtari/Web-App-Messenger/domain/payloads"
 	"github.com/ABazshoushtari/Web-App-Messenger/internal/logger"
 	"github.com/ABazshoushtari/Web-App-Messenger/repository"
+	"github.com/lib/pq"
 	"gorm.io/gorm"
+	"sort"
 )
 
 type Chat struct {
@@ -22,17 +24,17 @@ func New(repos *repository.Repositories) *Chat {
 
 func (c *Chat) AddChat(ctx context.Context, payload payloads.AddChatRequest) (*payloads.AddChatResponse, error) {
 	user := domain.GetUserDTO(ctx)
-	if err := c.repos.Chat.GetByParticipants(user.ID, payload.ParticipantID); !errors.Is(err, gorm.ErrRecordNotFound) {
-		if err == nil {
-			return nil, errors.New("chat already exists")
-		}
-		logger.Logger().Errorw("error while checking if chat exists", "error", err)
-		return nil, errors.New("error while checking if chat exists")
-	}
+	people := pq.Int64Array{int64(user.ID), int64(payload.ParticipantID)}
+	sort.Slice(people, func(i, j int) bool {
+		return people[i] < people[j]
+	})
 	chat := domain.Chat{
-		People: []uint64{user.ID, payload.ParticipantID},
+		People: people,
 	}
 	if err := c.repos.Chat.Create(&chat); err != nil {
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
+			return nil, errors.New("chat already exists")
+		}
 		logger.Logger().Errorw("error while creating chat", "error", err)
 		return nil, errors.New("error while creating chat")
 	}

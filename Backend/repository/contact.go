@@ -16,7 +16,7 @@ func newContactRepository(db *gorm.DB) *contactRepository {
 }
 
 func (c *contactRepository) Upsert(contact *domain.Contact) error {
-	return c.db.Save(&contact).Error
+	return c.db.Save(contact).Error
 }
 
 func (c *contactRepository) GetByUserID(userID uint64) ([]domain.Contact, error) {

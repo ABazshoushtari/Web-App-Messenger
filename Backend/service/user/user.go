@@ -53,10 +53,11 @@ func (u *User) AuthRegister(ctx context.Context, payload payloads.UserRegisterRe
 		logger.Logger().Errorw("error while registering user", "error", err)
 		return nil, errors.New("error while registering user")
 	}
-
-	if err := u.repos.User.SetImage(&user, payload.Image); err != nil {
-		logger.Logger().Errorw("error while setting user image", "error", err)
-		return nil, errors.New("error while setting user image")
+	if payload.Image != nil {
+		if err := u.repos.User.SetImage(&user, payload.Image); err != nil {
+			logger.Logger().Errorw("error while setting user image", "error", err)
+			return nil, errors.New("error while setting user image")
+		}
 	}
 
 	userDTO := user.ToDTO()
@@ -65,7 +66,6 @@ func (u *User) AuthRegister(ctx context.Context, payload payloads.UserRegisterRe
 }
 
 func (u *User) AuthLogin(ctx context.Context, payload payloads.UserLoginRequest) (*payloads.UserLoginResponse, error) {
-	password, _ := bcrypt.GenerateFromPassword([]byte(payload.Password), bcrypt.DefaultCost)
 	user := domain.User{}
 	if err := u.repos.User.GetByUsername(payload.Username, &user); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -75,7 +75,7 @@ func (u *User) AuthLogin(ctx context.Context, payload payloads.UserLoginRequest)
 		return nil, errors.New("error while getting user From DB")
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), password); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(payload.Password)); err != nil {
 		return nil, errors.New("invalid password")
 	}
 	token, err := helpers.GenerateJWT(user.ID)
@@ -125,11 +125,23 @@ func (u *User) UpdateUser(ctx context.Context, userID uint64, payload payloads.U
 	if user.ID != userID {
 		return nil, errors.New("input user id does not match with your id")
 	}
-	updatedUser := user.User
+
+	updatedUser := domain.User{}
+	if err := u.repos.User.GetByID(userID, &updatedUser); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("user not found")
+		}
+		logger.Logger().Errorw("error while getting user from db", "error", err)
+		return nil, errors.New("error while getting user from db")
+	}
+
 	if payload.Username != "" {
 		updatedUser.Username = payload.Username
 	}
 	if payload.Password != "" {
+		if len(payload.Password) < 8 {
+			return nil, errors.New("password must be at least 8 characters")
+		}
 		password, err := bcrypt.GenerateFromPassword([]byte(payload.Password), bcrypt.DefaultCost)
 		if err != nil {
 			return nil, errors.New("error while encrypting password")
@@ -154,8 +166,10 @@ func (u *User) UpdateUser(ctx context.Context, userID uint64, payload payloads.U
 	if err := u.repos.User.Update(&updatedUser); err != nil {
 		return nil, errors.New("error while updating user")
 	}
-	if err := u.repos.User.SetImage(&updatedUser, payload.Image); err != nil {
-		return nil, errors.New("error while updating user image")
+	if payload.Image != nil {
+		if err := u.repos.User.SetImage(&updatedUser, payload.Image); err != nil {
+			return nil, errors.New("error while updating user image")
+		}
 	}
 	return &payloads.GenericsSuccessFlagResponse{
 		Successful: true,

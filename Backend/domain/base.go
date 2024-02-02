@@ -25,7 +25,7 @@ func GetUserDTO(ctx context.Context) *UserDTO {
 	if ctx == nil {
 		return nil
 	}
-	if c, ok := ctx.(CustomContext); ok {
+	if c, ok := ctx.(*CustomContext); ok {
 		return c.GetUser()
 	}
 	return nil

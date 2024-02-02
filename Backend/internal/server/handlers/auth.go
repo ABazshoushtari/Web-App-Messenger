@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/ABazshoushtari/Web-App-Messenger/domain/payloads"
 	"github.com/labstack/echo/v4"
+	"net/http"
 )
 
 func (h *Handlers) AuthRegister() echo.HandlerFunc {
@@ -18,10 +19,18 @@ func (h *Handlers) AuthRegister() echo.HandlerFunc {
 		if err := c.Bind(&req); err != nil {
 			return errors.New("invalid form request")
 		}
-		//img, err := c.FormFile("image")
-		//if err != nil {
-		//	return errors.New("invalid user image")
-		//}
+		img, err := c.FormFile("image")
+		if errors.Is(err, http.ErrMissingFile) || err == nil {
+			req.Image = img
+			if req.Image != nil {
+				if req.Image.Size > 1000000 {
+					return errors.New("image size too large")
+				}
+			}
+		} else {
+			return errors.New("invalid image")
+		}
+
 		//username := c.FormValue("username")
 		//password := c.FormValue("password")
 		//firstName := c.FormValue("first_name")

@@ -29,13 +29,13 @@ type UserLoginResponse struct {
 }
 
 type UserUpdateRequest struct {
-	Username  string                `form:"username,omitempty"`
-	Password  string                `form:"password,omitempty"`
-	FirstName string                `form:"first_name,omitempty"`
-	LastName  string                `form:"last_name,omitempty"`
-	Phone     string                `form:"phone,omitempty"`
-	Image     *multipart.FileHeader `form:"image,omitempty"`
-	Bio       string                `form:"bio,omitempty"`
+	Username  string                `form:"username"`
+	Password  string                `form:"password"`
+	FirstName string                `form:"first_name"`
+	LastName  string                `form:"last_name"`
+	Phone     string                `form:"phone"`
+	Image     *multipart.FileHeader `form:"image"`
+	Bio       string                `form:"bio"`
 }
 
 type UserShowResponse struct {

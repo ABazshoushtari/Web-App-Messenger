@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/ABazshoushtari/Web-App-Messenger/domain"
 	"gorm.io/gorm"
-	"strconv"
 )
 
 type chatRepository struct {
@@ -35,9 +34,9 @@ func (c *chatRepository) GetByID(chatID uint64, chat *domain.Chat) error {
 
 func (c *chatRepository) GetByUserID(userID uint64) ([]domain.Chat, error) {
 	chats := []domain.Chat{}
-	err := c.db.Where(strconv.Itoa(int(userID)) + "= ANY(people)").Find(&chats).Error
+	err := c.db.Where("ARRAY[?]::Int[] <@ people", userID).Find(&chats).Error
 	return chats, err
-} //TODO: check if this function actually works
+}
 
 func (c *chatRepository) Delete(chatID uint64) error {
 	return c.db.Where("id = ?", chatID).Delete(&domain.Chat{}).Error
@@ -53,10 +52,6 @@ func (c *chatRepository) getMessages(chatID uint64) ([]domain.Message, error) {
 	messages := []domain.Message{}
 	err := c.db.Where("chat_id = ?", chatID).Find(&messages).Error
 	return messages, err
-}
-
-func (c *chatRepository) GetByParticipants(firstUser uint64, secondUser uint64) error {
-	return c.db.Where("ARRAY[?,?] <@ people", firstUser, secondUser).Find(&domain.Chat{}).Error
 }
 
 func (c *chatRepository) DeleteUserFromChats(userID uint64) error {

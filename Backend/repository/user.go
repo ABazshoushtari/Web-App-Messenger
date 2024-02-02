@@ -87,7 +87,7 @@ func (u *userRepository) Delete(user *domain.User) error {
 }
 
 func (u *userRepository) GetByKey(value string, user *domain.User) error {
-	err := u.db.Where("username = ? or phone_number = ?", value).First(&user).Error
+	err := u.db.Where("username = ? or phone_number = ?", value, value).First(&user).Error
 	return err
 }
 

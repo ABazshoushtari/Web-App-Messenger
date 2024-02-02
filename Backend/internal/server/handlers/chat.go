@@ -87,13 +87,13 @@ func (h *Handlers) DeleteMessage() echo.HandlerFunc {
 		payloads.GenericsSuccessFlagResponse
 	}
 	return func(c echo.Context) error {
-		chatID, err := strconv.ParseUint(c.Param("chat_id"), 10, 64)
+		chatID, err := strconv.ParseUint(c.Param("id"), 10, 64)
 		if err != nil {
 			return errors.New("invalid chat id")
 		}
 		messageID, err := strconv.ParseUint(c.Param("message_id"), 10, 64)
 		if err != nil {
-			return errors.New("invalid chat id")
+			return errors.New("invalid message id")
 		}
 		res, err := h.svcs.Chat.DeleteMessage(c.Request().Context(), chatID, messageID)
 		if err != nil {
