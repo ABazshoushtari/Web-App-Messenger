@@ -10,7 +10,7 @@ func routes(e *echo.Echo, h *handlers.Handlers, m *middleware.Middlewares) {
 	api := e.Group("/api")
 	api.POST("/register", h.AuthRegister())
 	api.POST("/login", h.AuthLogin())
-
+	api.GET("/ws", h.WebsocketHandler)
 	user := api.Group("/users", m.Auth())
 	user.GET("/:id", h.ShowUser())
 	user.PATCH("/:id", h.UpdateUser())
