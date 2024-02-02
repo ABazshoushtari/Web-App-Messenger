@@ -37,7 +37,6 @@ const Signup = () => {
         if (!formData.phone.trim()) newErrors.phone = 'Phone number is required';
         if (!formData.username.trim()) newErrors.username = 'Username is required';
         if (!formData.password) newErrors.password = 'Password is required';
-        // Add more validation as needed
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0; // Returns true if no errors
@@ -54,7 +53,7 @@ const Signup = () => {
             formDataToSend.append(key, formData[key]);
         }
 
-        fetch('/api/signup', {
+        fetch('/api/register', {
             method: 'POST',
             body: formDataToSend,
         })
@@ -70,7 +69,7 @@ const Signup = () => {
                 // On successful signup
                 if (body.token) {
                     localStorage.setItem('jwtToken', body.token);
-                    navigate('/login');
+                    navigate('/api/login');
                 }
             })
             .catch((error) => {
